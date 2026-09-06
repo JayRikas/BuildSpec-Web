@@ -1,5 +1,5 @@
 /* global document, innerWidth */
-import { readFile } from 'node:fs/promises';
+import { readFile, realpath } from 'node:fs/promises';
 import ts from 'typescript';
 import { chromium } from '@playwright/test';
 const load = async path => {
@@ -7,14 +7,20 @@ const load = async path => {
  const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext}}).outputText;
  return import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
 };
+const canonicalPath=process.argv[2];
+if(!canonicalPath)throw Error('An external canonical legal.ts path is required. Usage: node scripts/verify-legal.mjs D:/BuildSpec/apps/mobile/lib/legal.ts');
+if(await realpath(canonicalPath)===await realpath('src/content/legal.ts'))throw Error('Canonical source must be external, not the website copy');
+const canonicalSource=await readFile(canonicalPath,'utf8');
+const websiteSource=await readFile('src/content/legal.ts','utf8');
+// Only normalize platform line endings; no trimming, filtering or selected exports.
+if(canonicalSource.replaceAll('\r\n','\n')!==websiteSource.replaceAll('\r\n','\n'))throw Error('Full canonical source mismatch: website must mirror the entire mobile legal.ts');
+const canonical=await load(canonicalPath);
 const legal=await load('src/content/legal.ts');
-if(process.argv[2]){
- const canonical=await load(process.argv[2]);
- for(const key of ['LEGAL_LAST_UPDATED','PRIVACY_POLICY_VERSION','TERMS_VERSION','LEGAL_CONTACT','PRIVACY_SECTIONS','TERMS_SECTIONS']){
-  if(JSON.stringify(legal[key])!==JSON.stringify(canonical[key]))throw Error(`Canonical mismatch: ${key}`);
- }
- console.log('Canonical source comparison: exact match for all headings, paragraphs, versions, date and contact');
+if(JSON.stringify(Object.keys(legal))!==JSON.stringify(Object.keys(canonical)))throw Error('Canonical export names differ');
+for(const key of Object.keys(canonical)){
+ if(JSON.stringify(legal[key])!==JSON.stringify(canonical[key]))throw Error(`Canonical mismatch: ${key}`);
 }
+console.log('Full external canonical source and every export match, including Community Guidelines');
 const browser=await chromium.launch({channel:'msedge',headless:true});
 for(const javaScriptEnabled of [true,false]){
  const context=await browser.newContext({javaScriptEnabled});const page=await context.newPage();
@@ -22,7 +28,7 @@ for(const javaScriptEnabled of [true,false]){
  for(const width of [1440,390,360]){
   await page.setViewportSize({width,height:900});
   for(const route of ['privacy','terms']){
-   const sections=route==='privacy'?legal.PRIVACY_SECTIONS:legal.TERMS_SECTIONS;
+   const sections=route==='privacy'?canonical.PRIVACY_SECTIONS:canonical.TERMS_SECTIONS;
    const title=route==='privacy'?'Privacy Policy':'Terms of Use';
    // GitHub Pages resolves directory routes with a trailing-slash redirect; Vite preview needs it explicitly without JS.
    await page.goto(`http://127.0.0.1:4173/${route}${javaScriptEnabled ? '' : '/'}`);
@@ -47,5 +53,3 @@ for(const javaScriptEnabled of [true,false]){
  if(errors.length)throw Error(errors.join('\n'));await context.close();
 }
 await browser.close();
-
-

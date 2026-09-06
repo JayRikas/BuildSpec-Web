@@ -38,4 +38,12 @@ export const TERMS_SECTIONS: LegalSection[] = [
   { heading: "Updates and contact", paragraphs: ["These Terms may be updated as BuildSpec changes. A new version will be identified in the app. For current product support, use Send Feedback or Report a Bug in Profile; a formal legal contact is still required before public release."] },
 ];
 
-
+export const GUIDELINES_SECTIONS: LegalSection[] = [
+  { heading: "Built for enthusiasts", paragraphs: ["Share cars, projects, progress and knowledge with respect for the people behind every build. Motorsport, drifting, track driving, race cars, performance modification and mechanical work belong here when shared responsibly."] },
+  { heading: "Sexual content and child safety", paragraphs: ["Do not post nudity, pornography, sexually explicit content, sexual exploitation, or sexualized content involving minors. Any child sexual abuse material or sexual exploitation of minors is strictly prohibited and may require urgent escalation to appropriate authorities."] },
+  { heading: "Violence and dangerous conduct", paragraphs: ["Do not post graphic gore, credible threats, or content celebrating severe real-world violence. Do not use BuildSpec to organize clearly illegal dangerous activity, encourage reckless conduct likely to harm others, or facilitate criminal behavior."] },
+  { heading: "Respect and privacy", paragraphs: ["No harassment, bullying, hateful or discriminatory attacks, doxxing, or publishing private personal information. Review photos for faces, plates, addresses, documents, reflections and location clues before making them public."] },
+  { heading: "Scams and platform abuse", paragraphs: ["No scams, fraud, illegal goods or services, extremist promotion, malicious content or links, spam, fake engagement or impersonation."] },
+  { heading: "Ownership and copyright", paragraphs: ["Only upload content you created or have the right and permission to share. Do not infringe copyright, trademarks or other intellectual-property rights."] },
+  { heading: "Report and block", paragraphs: ["Report profiles, builds, photos or comments that break these rules. Block users you do not want to interact with. BuildSpec may remove content or restrict accounts, but formal moderation operations and escalation processes are still being prepared for broader release."] },
+];
