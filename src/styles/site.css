@@ -33,3 +33,9 @@
 
 /* Keep the Garage copy beside its product evidence on laptop screens. */
 @media(min-width:1000px) and (max-width:1100px){.garage-layout{grid-template-columns:.85fr 1.25fr;gap:30px}.garage-screens{gap:16px}}
+
+/* Long-form legal documents retain the established site reading column. */
+.legal{overflow-wrap:anywhere}
+.legal-meta{display:flex;flex-wrap:wrap;gap:8px 28px;padding:16px 0}
+.legal-meta p{margin:0;font-size:.875rem;color:var(--muted)}
+.legal section h2{color:var(--accent)}

@@ -1,1 +1,30 @@
-export function LegalPage({kind}:{kind:string}){const privacy=kind==='privacy';return <article className="legal wrap"><a className="back-link" href="/">← Back to BuildSpec</a><p className="eyebrow">PRE-PUBLIC-RELEASE DOCUMENTATION</p><h1>{privacy?'Privacy':'Terms'}</h1><p className="legal-intro">Final {privacy?'privacy documentation':'terms of use'} is being prepared for public release.</p><section><h2>Current status</h2><p>BuildSpec — Project Car Garage is currently in closed beta. This page is a placeholder for the finalized {privacy?'privacy documentation':'terms'} and does not represent a complete {privacy?'privacy policy':'legal agreement'}.</p></section><section><h2>{privacy?'This website':'Public availability'}</h2><p>{privacy?'This V1 website does not include account registration, analytics, tracking cookies or data collection forms.':'The BuildSpec application is not yet available for public download. Public release details and finalized terms will be published when ready.'}</p></section><section><h2>Questions</h2><p>For questions about BuildSpec or the upcoming documentation, contact <a href="mailto:support@buildspec.eu">support@buildspec.eu</a>.</p></section></article>}
+import { useEffect } from 'react';
+import { LEGAL_LAST_UPDATED, PRIVACY_POLICY_VERSION, TERMS_VERSION, PRIVACY_SECTIONS, TERMS_SECTIONS } from '../content/legal';
+
+export function LegalPage({kind}:{kind:string}) {
+  const privacy = kind === 'privacy';
+  const title = privacy ? 'Privacy Policy' : 'Terms of Use';
+  const version = privacy ? PRIVACY_POLICY_VERSION : TERMS_VERSION;
+  const sections = privacy ? PRIVACY_SECTIONS : TERMS_SECTIONS;
+  useEffect(() => {
+    document.title = `${title} | BuildSpec`;
+    const description = `BuildSpec ${title}. Version ${version}. Last updated ${LEGAL_LAST_UPDATED}.`;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://buildspec.eu/${kind}`);
+    for (const prefix of ['og', 'twitter']) {
+      const attribute = prefix === 'og' ? 'property' : 'name';
+      document.querySelector(`meta[${attribute}="${prefix}:title"]`)?.setAttribute('content', `${title} | BuildSpec`);
+      document.querySelector(`meta[${attribute}="${prefix}:description"]`)?.setAttribute('content', description);
+    }
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', `https://buildspec.eu/${kind}`);
+  }, [kind, title, version]);
+  return <article className="legal wrap">
+    <a className="back-link" href="/">← Back to BuildSpec</a>
+    <h1>{title}</h1>
+    <div className="legal-meta"><p>Last updated {LEGAL_LAST_UPDATED}</p><p>Version {version}</p></div>
+    {sections.map(section => <section key={section.heading}>
+      <h2>{section.heading}</h2>
+      {section.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
+    </section>)}
+  </article>;
+}
